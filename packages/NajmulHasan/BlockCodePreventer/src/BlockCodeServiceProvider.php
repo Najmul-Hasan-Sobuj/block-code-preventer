@@ -9,29 +9,34 @@ class BlockCodeServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        // Register any bindings or configurations here
+        // Merge your package configuration
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/blockcode.php',
+            'blockcode'
+        );
     }
 
     public function boot()
     {
-        // Publish configuration file
+        // Publishes the configuration file to the Laravel application
         $this->publishes([
-            __DIR__.'/../config/blockcode.php' => config_path('blockcode.php'),
+            __DIR__ . '/../config/blockcode.php' => config_path('blockcode.php'),
         ], 'config');
 
-        // Load your custom functionalities
-        $this->monitorFiles();
+        // Monitor and protect files
+        $this->protectFiles();
     }
 
-    protected function monitorFiles()
+    protected function protectFiles()
     {
-        $protectedFiles = config('blockcode.protected_files');
+        $protectedFiles = config('blockcode.protected_files', []);
 
         foreach ($protectedFiles as $file) {
+            // Check if the file exists
             if (File::exists($file)) {
                 $originalContent = File::get($file);
 
-                // Ensure original content is written when the application boots
+                // Example: Ensure original content is written when the application boots
                 File::put($file, $originalContent);
             }
         }
